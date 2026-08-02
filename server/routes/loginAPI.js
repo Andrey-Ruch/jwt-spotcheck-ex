@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const users = require('../../fakeDB/users');
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const secretKey = 'my_secret_key';
 
@@ -19,6 +20,10 @@ function authenticateUser(username, password) {
   return { id: user.id, username: user.username };
 }
 
+function generateAccessToken(user) {
+  return jwt.sign(user, secretKey);
+}
+
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
   const user = authenticateUser(username, password);
@@ -27,7 +32,9 @@ router.post("/login", (req, res) => {
     return res.status(401).send({ message: "Invalid username or password" });
   }
 
-  res.send({ message: "user has successfully logged in" });
+  const accessToken = generateAccessToken(user);
+
+  res.send({ accessToken });
 });
 
 

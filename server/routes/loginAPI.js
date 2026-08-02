@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const users = require('../../fakeDB/users');
+const bcrypt = require("bcryptjs");
 
 const secretKey = 'my_secret_key';
 
@@ -25,7 +26,7 @@ router.post("/login", (req, res) => {
   if (!user) {
     return res.status(401).send({ message: "Invalid username or password" });
   }
-  
+
   res.send({ message: "user has successfully logged in" });
 });
 

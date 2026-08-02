@@ -4,8 +4,30 @@ const users = require('../../fakeDB/users');
 
 const secretKey = 'my_secret_key';
 
-router.post('/login', (req, res) => {
-  res.send({ msg:"logged in?" });
+function authenticateUser(username, password) {
+  const user = users.find((u) => u.username === username);
+  if (!user) {
+    return null;
+  }
+
+  const isPasswordValid = bcrypt.compareSync(password, user.password);
+  if (!isPasswordValid) {
+    return null;
+  }
+
+  return { id: user.id, username: user.username };
+}
+
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  const user = authenticateUser(username, password);
+
+  if (!user) {
+    return res.status(401).send({ message: "Invalid username or password" });
+  }
+  
+  res.send({ message: "user has successfully logged in" });
 });
+
 
 module.exports = router;
